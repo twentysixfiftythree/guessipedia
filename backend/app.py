@@ -2,7 +2,7 @@ from flask import Flask
 from models import db, WikipediaPage
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:iloveboobs@localhost/isaaciscool'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:Iwantajob69$@localhost:3306/practice_1'
 db.init_app(app)
 
 # Create tables before running the application
@@ -16,6 +16,14 @@ def add_page():
         db.session.add(page)
         db.session.commit()
     return 'Page added successfully!'
+
+@app.route('/delete')
+def delete_page():
+    with app.app_context():
+        page = WikipediaPage.query.filter_by(title='Example Wikipedia Page').first()
+        db.session.delete(page)
+        db.session.commit()
+    return 'Page deleted successfully!'
 
 if __name__ == '__main__':
     app.run(debug=True)
