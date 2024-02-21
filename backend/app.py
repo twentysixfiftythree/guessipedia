@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from models import db, WikipediaPage
 
 app = Flask(__name__)
@@ -10,6 +10,12 @@ with app.app_context():
     db.create_all()
 
 @app.route('/')
+def home():
+    pages = db.session.execute(db.select(WikipediaPage).order_by(WikipediaPage.id)).fetchone()
+    print(pages)
+    return render_template("home.html", users=pages)
+
+@app.route('/add')
 def add_page():
     with app.app_context():
         page = WikipediaPage(title='Example Wikipedia Page', link='wikipedia.com', surrounding_links='Link 1, Link 2, Link 3')
