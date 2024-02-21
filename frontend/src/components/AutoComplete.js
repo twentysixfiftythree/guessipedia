@@ -6,34 +6,34 @@ import AsyncSelect from 'react-select/async';
 export function LoadWikis () {
     const [wikis, setWikis] = React.useState([]);
     React.useEffect(() => {
-        fetch('/get_wikis').then(response => 
+        fetch('/get_wiki_name').then(response => 
             response.json().then(data => {
             //console.log(data);
             setWikis(data.wikis);
         })
     );
     }, []);
-    console.log("these are", wikis);
     return wikis;
 }
 
-const options = LoadWikis().title;
-
-
+var options = [
+    { value: 'jack', label: 'Jack' },
+    { value: 'john', label: 'John' },
+    { value: 'three', label: 'Three' },
+  ];
 
 
 export const AutoCompleteBar = () => {
-    LoadWikis();
     const handleChange = (selectedOption)=> {
         console.log("handleChange",selectedOption);
     };
-    
     const loadOptions = (searchValue, callback) => {
         setTimeout(() => {
         const filteredOptions = options.filter((option) =>
             option.label.toLowerCase().includes(searchValue.toLowerCase())
         );
         console.log('loadOptions', searchValue, filteredOptions);
+        console.log("options",options);
         callback(filteredOptions);
         }, 0)
     

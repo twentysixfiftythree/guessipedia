@@ -42,7 +42,7 @@ def delete_page():
         db.session.commit()
     return 'Page deleted successfully!'
 
-@app.route('/get_wikis', methods=['GET', 'POST'])
+@app.route('/get_wikis')
 def hello():
     wikiList = WikipediaPage.query.all()
 
@@ -52,6 +52,16 @@ def hello():
         wikis.append({'title': wiki.title, 'link': wiki.link, 'surrounding_links': wiki.surrounding_links})
 
 
+    return jsonify({'wikis': wikis})
+
+@app.route('/get_wiki_name')
+def get_wiki_name():
+    wikiList = WikipediaPage.query.all()
+
+    wikis = []
+
+    for wiki in wikiList:
+        wikis.append({'value': wiki.title, 'label': wiki.title})
     return jsonify({'wikis': wikis})
 
 

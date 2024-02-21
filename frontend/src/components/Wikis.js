@@ -8,7 +8,7 @@ export const Wikis = ({ wikis }) => {
                 return (
                     <List.Item key={wiki.id}>
                         <Header>{wiki.title}</Header>
-                        <List.Description>{wiki.body}</List.Description>
+                        <List.Description>{wiki.link}</List.Description>
                     </List.Item>
                 )
             })}
