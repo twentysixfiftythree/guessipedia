@@ -1,9 +1,11 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, request
 from flask_migrate import Migrate
 from models import db, WikipediaPage
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
+
 import random as rand
+
 
 app = Flask(__name__)
 CORS(app, origins="*")
@@ -47,10 +49,10 @@ def hello():
     wikiList = WikipediaPage.query.all()
 
     wikis = []
-
+    i=0
     for wiki in wikiList:
-        wikis.append({'title': wiki.title, 'link': wiki.link, 'surrounding_links': wiki.surrounding_links})
-
+        wikis.append({'id':i,'title': wiki.title, 'link': wiki.link, 'surrounding_links': wiki.surrounding_links})
+        i+=1
 
     return jsonify({'wikis': wikis})
 
@@ -59,10 +61,17 @@ def get_wiki_name():
     wikiList = WikipediaPage.query.all()
 
     wikis = []
-
+    i=0
     for wiki in wikiList:
-        wikis.append({'value': wiki.title, 'label': wiki.title})
+        wikis.append({ 'value': wiki.title, 'label': wiki.title})
     return jsonify({'wikis': wikis})
+
+
+@app.route('/check_wiki', methods=['POST'])
+def check_wiki():
+    data = request.get_json()
+
+    return jsonify({'data': data})
 
 
 if __name__ == '__main__':
