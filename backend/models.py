@@ -1,10 +1,22 @@
-from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import create_engine, Column, String, Integer, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy_utils import database_exists, create_database
 
-db = SQLAlchemy()
+DATABASE_URI = 'mysql+pymysql://user:iloveboobs@localhost/links_bidirectional'
 
-class WikipediaPage(db.Model):
-    __tablename__ = 'wikipedia_page'  # Specify the table name
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(255), unique=True, nullable=False)
-    surrounding_links = db.Column(db.Text, nullable=False)
-    link = db.Column(db.Text, nullable=False)
+engine = create_engine(DATABASE_URI, echo=True)
+
+if not database_exists(engine.url):
+    create_database(engine.url)
+
+Base = declarative_base()
+
+class WikipediaPage(Base):
+    __tablename__ = 'wikipedia_page'
+    id = Column(Integer, primary_key=True)
+    title = Column(String(255), unique=True, nullable=False)
+    surrounding_links = Column(Text, nullable=False)
+    link = Column(Text, nullable=False)
+
+Base.metadata.create_all(engine)

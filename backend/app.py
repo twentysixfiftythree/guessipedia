@@ -1,35 +1,14 @@
-from flask import Flask, render_template
-from models import db, WikipediaPage
+from data_fetch import fetch_wikipedia_page_details
+from database_interaction import add_wikipedia_page
 
-app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:Iwantajob69$@localhost:3306/practice_1'
-db.init_app(app)
+def main():
+    urls = [
+        'https://en.wikipedia.org/wiki/Python_(programming_language)',
+        'https://en.wikipedia.org/wiki/Flask_(web_framework)'
+    ]  # Example URLs
+    for url in urls:
+        page_data = fetch_wikipedia_page_details(url)
+        add_wikipedia_page(page_data)
 
-# Create tables before running the application
-with app.app_context():
-    db.create_all()
-
-@app.route('/')
-def home():
-    pages = db.session.execute(db.select(WikipediaPage).order_by(WikipediaPage.id)).fetchone()
-    print(pages)
-    return render_template("home.html", users=pages)
-
-@app.route('/add')
-def add_page():
-    with app.app_context():
-        page = WikipediaPage(title='Example Wikipedia Page', link='wikipedia.com', surrounding_links='Link 1, Link 2, Link 3')
-        db.session.add(page)
-        db.session.commit()
-    return 'Page added successfully!'
-
-@app.route('/delete')
-def delete_page():
-    with app.app_context():
-        page = WikipediaPage.query.filter_by(title='Example Wikipedia Page').first()
-        db.session.delete(page)
-        db.session.commit()
-    return 'Page deleted successfully!'
-
-if __name__ == '__main__':
-    app.run(debug=True)
+if __name__ == "__main__":
+    main()
