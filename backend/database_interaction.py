@@ -1,5 +1,5 @@
 from sqlalchemy.exc import SQLAlchemyError
-from database_setup import SessionLocal, WikipediaPage
+from models import SessionLocal, WikipediaPage
 
 def add_wikipedia_page(page_data):
     session = SessionLocal()
