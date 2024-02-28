@@ -1,10 +1,9 @@
-from sqlalchemy import create_engine, Column, String, Integer, Text
+from sqlalchemy import create_engine, Column, Integer, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database
 
-DATABASE_URI = 'mysql+pymysql://user:iloveboobs@localhost/links_bidirectional'
-
+DATABASE_URI = 'mysql+pymysql://user:password@localhost/links_bidirectional'
 engine = create_engine(DATABASE_URI, echo=True)
 
 if not database_exists(engine.url):
@@ -18,5 +17,7 @@ class WikipediaPage(Base):
     title = Column(String(255), unique=True, nullable=False)
     surrounding_links = Column(Text, nullable=False)
     link = Column(Text, nullable=False)
+
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base.metadata.create_all(engine)
