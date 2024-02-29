@@ -1,7 +1,10 @@
 import requests
-import bs4
+from bs4 import BeautifulSoup
 
 def fetch_wikipedia_page_details(url):
+    '''Returns categories and links from Wikipedia.
+    Excludes the sections given in <exclude_sections>
+    '''
     exclude_sections = ['See also', 'References', 'External links', 'Further reading', 'Notes', 'Bibliography']
     
     response = requests.get(url)
@@ -10,7 +13,6 @@ def fetch_wikipedia_page_details(url):
     # Extract the title of the Wikipedia page
     title = soup.find('h1', id='firstHeading').text if soup.find('h1', id='firstHeading') else 'No Title Found'
     
-    # Initialize list for links
     all_links = []
     
     # Find links from the introductory section
@@ -35,11 +37,19 @@ def fetch_wikipedia_page_details(url):
     # Deduplicate the links list
     all_links = list(set(all_links))
 
+    # grab categories
+    categories = []
+    #cat links goes meow
+    cat_links = soup.find('div', {'id': 'mw-normal-catlinks'})
+    if cat_links:
+        categories = [a.text for a in cat_links.find_all('a', href=True) if a['href'].startswith('/wiki/Category:')]
+    categories = list(set(categories))
     # Construct the return dictionary
     page_data = {
         'title': title,
         'links': all_links,
-        'url': url
+        'url': url,
+        'categories': categories
     }
 
     return page_data

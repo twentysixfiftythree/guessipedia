@@ -5,7 +5,8 @@ def add_wikipedia_page(page_data):
     session = SessionLocal()
     try:
         links_str = ', '.join(page_data['links'])
-        new_page = WikipediaPage(title=page_data['title'], surrounding_links=links_str, link=page_data['url'])
+        categories_str = ', '.join(page_data['categories'])
+        new_page = WikipediaPage(title=page_data['title'], surrounding_links=links_str, link=page_data['url'], categories = categories_str)
         session.add(new_page)
         session.commit()
         print(f"Added page: {page_data['title']}")
