@@ -2,7 +2,7 @@ from sqlalchemy import create_engine, Column, Integer, String, Text
 from sqlalchemy.dialects.mysql import LONGTEXT
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy_utils import database_exists, create_database
+from sqlalchemy_utils import database_exists, create_database, drop_database
 import json
 
 
@@ -12,8 +12,10 @@ with open('config.json', 'r') as f:
 DATABASE_URI = config['DATABASE_URI']
 engine = create_engine(DATABASE_URI, echo=False)
 
-if not database_exists(engine.url):
-    create_database(engine.url)
+if database_exists(engine.url):
+    drop_database(engine.url)
+create_database(engine.url)
+    
 
 Base = declarative_base()
 

@@ -57,6 +57,7 @@ def fetch_wikipedia_page_details(url):
     cat_links = soup.find('div', {'id': 'mw-normal-catlinks'})
     if cat_links:
         categories = [a.text for a in cat_links.find_all('a', href=True) if a['href'].startswith('/wiki/Category:')]
+    
     categories = list(set(categories))
     categories = remove_meta_cats(categories, title)
 
