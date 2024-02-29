@@ -4,7 +4,8 @@ from database_interaction import add_wikipedia_page
 def main():
     urls = [
         'https://en.wikipedia.org/wiki/Python_(programming_language)',
-        'https://en.wikipedia.org/wiki/Flask_(web_framework)'
+        'https://en.wikipedia.org/wiki/Flask_(web_framework)',
+        'https://en.wikipedia.org/wiki/Canada'
     ]
     
     # Example URLs

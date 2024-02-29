@@ -1,6 +1,20 @@
 import requests
 from bs4 import BeautifulSoup
 
+def remove_meta_cats(cats, title):
+    """
+
+    meow meow meow
+    remove the categories,  that have the title in it
+    meow meow meow
+
+    """
+    non_meta_cats = []
+    for cat in cats:
+        if not (title in cat):
+            non_meta_cats.append(cat)
+    return non_meta_cats
+
 def fetch_wikipedia_page_details(url):
     '''Returns categories and links from Wikipedia.
     Excludes the sections given in <exclude_sections>
@@ -44,6 +58,8 @@ def fetch_wikipedia_page_details(url):
     if cat_links:
         categories = [a.text for a in cat_links.find_all('a', href=True) if a['href'].startswith('/wiki/Category:')]
     categories = list(set(categories))
+    categories = remove_meta_cats(categories, title)
+
     # Construct the return dictionary
     page_data = {
         'title': title,
