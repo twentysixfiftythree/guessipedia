@@ -3,12 +3,9 @@ from bs4 import BeautifulSoup
 
 
 def remove_meta_cats(cats, title):
-    """
-
-    meow meow meow (I HATE THIS SO MUCH)
+    """meow meow meow (I HATE THIS SO MUCH)
     remove the categories,  that have the title in it
     meow meow meow
-
     """
     non_meta_cats = []
     for cat in cats:
@@ -42,6 +39,16 @@ def fetch_wikipedia_page_details(url):
 
     all_links = []
 
+    # Exclude links with these prefixes
+    prefixes = [
+        "/wiki/Special:",
+        "/wiki/Category:",
+        "/wiki/Portal:",
+        "/wiki/Help:",
+        "/wiki/File:",
+        "/wiki/Template:",
+        "/wiki/Wikipedia:",
+    ]
     # Find links from the introductory section
     parser_output = soup.find("div", class_="mw-parser-output")
     if parser_output:
@@ -52,18 +59,7 @@ def fetch_wikipedia_page_details(url):
                     "https://en.wikipedia.org" + a["href"]
                     for a in intro_section.find_all("a", href=True)
                     if a["href"].startswith("/wiki/")
-                    and (
-                        # TODO this is a bit of a mess
-                        not (
-                            a["href"].startswith("/wiki/Special:")
-                            or a["href"].startswith("/wiki/Category:")
-                            or a["href"].startswith("/wiki/Portal:")
-                            or a["href"].startswith("/wiki/Help:")
-                            or a["href"].startswith("/wiki/File:")
-                            or a["href"].startswith("/wiki/Template:")
-                            or a["href"].startswith("/wiki/Wikipedia:")
-                        )
-                    )
+                    and (not (any(a["href"].startswith(prefix) for prefix in prefixes)))
                 ]
             )
 
@@ -81,15 +77,7 @@ def fetch_wikipedia_page_details(url):
                     if a["href"].startswith("/wiki/")
                     and (
                         # TODO this is a bit of a mess
-                        not (
-                            a["href"].startswith("/wiki/Special:")
-                            or a["href"].startswith("/wiki/Category:")
-                            or a["href"].startswith("/wiki/Portal:")
-                            or a["href"].startswith("/wiki/Help:")
-                            or a["href"].startswith("/wiki/File:")
-                            or a["href"].startswith("/wiki/Template:")
-                            or a["href"].startswith("/wiki/Wikipedia:")
-                        )
+                        not (any(a["href"].startswith(prefix) for prefix in prefixes))
                     )
                 ]
                 all_links.extend(links)
@@ -99,7 +87,6 @@ def fetch_wikipedia_page_details(url):
 
     # Deduplicate the links list
     all_links = list(set(all_links))
-    print(len(all_links))
 
     # grab categories
     categories = []
