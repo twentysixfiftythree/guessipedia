@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .sidebar-icon {
+    @apply relative flex items-center justify-center 
+    h-12 w-12 mt-2 mb-2 mx-auto 
+    bg-gray-700 text-yellow-500
+    hover:bg-yellow-500 hover:text-white
+    rounded-3xl hover:rounded-xl
+    transition-all duration-300 ease-linear
+    cursor-pointer;
+  }
+  .nav {
+    @apply top-0 left-0 w-full h-14 m-0 
+    flex flex-row justify-between items-center bg-gray-700 text-white shadow-md;
+  } 
+  .settings-menu {
+    @apply  relative flex items-center justify-center mt-20 m-auto h-80 w-1/4 rounded-2xl  bg-gray-700 text-white shadow-md;
+  }
+
+  .alert-enter {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  .alert-enter-active {
+    opacity: 1;
+    transform: translateX(0);
+    transition: opacity 300ms, transform 300ms;
+  }
+  .alert-exit {
+    opacity: 1;
+  }
+  .alert-exit-active {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 300ms, transform 300ms;
+  }
+  
+}
+
+
