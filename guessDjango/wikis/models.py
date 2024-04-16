@@ -5,8 +5,9 @@ from django.db import models
 
 class WikiPage(models.Model):
     id = models.AutoField(primary_key=True)
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, unique=True)
     surrounding_links = models.TextField()
+    surrounding_titles = models.TextField()
     link = models.CharField(max_length=100)
     categories = models.TextField()
 

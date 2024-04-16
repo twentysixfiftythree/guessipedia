@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 
 
 def remove_meta_cats(cats, title):
-    """meow meow meow (I HATE THIS SO MUCH)
+    """meow meow meow
     remove the categories,  that have the title in it
     meow meow meow
     """
@@ -88,6 +88,10 @@ def fetch_wikipedia_page_details(url):
 
     # Deduplicate the links list
     all_links = list(set(all_links))
+    links_titles = [
+        link.removeprefix("https://en.wikipedia.org/wiki/") for link in all_links
+    ]
+    links_titles = [link.lstrip(' ') for link in links_titles]
 
     # grab categories
     categories = []
@@ -107,6 +111,7 @@ def fetch_wikipedia_page_details(url):
     page_data = {
         "title": title,
         "links": all_links,
+        "links_titles": links_titles,
         "url": url,
         "categories": categories,
     }
