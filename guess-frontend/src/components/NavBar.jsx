@@ -16,7 +16,7 @@ const NavBar = () => {
     <>
       <div
         className=" relative top-0 left-0 w-full h-14 m-0 
-                    flex flex-row justify-between items-center bg-gray-700 text-white shadow-md"
+                    flex flex-row justify-between items-center bg-gray-800 text-white shadow-md"
       >
         <h1 className="ml-4 text-yellow-500">Guessipedia</h1>
         <NavBarIcons setShowSettings={setShowSettings} />
@@ -42,7 +42,7 @@ const NavBarIcons = ({ setShowSettings }) => {
   return (
     <div
       className="top-0 left-0 w-full h-10 m-0 
-      flex flex-row justify-end items-center bg-gray-700 text-white "
+      flex flex-row justify-end items-center bg-gray-800 text-white "
     >
       <Icon
         icon={
@@ -57,7 +57,12 @@ const NavBarIcons = ({ setShowSettings }) => {
 
 const Icon = ({ icon, href }) => {
   return (
-    <a href={href} target="_blank" className="sidebar-icon mx-2">
+    <a
+      href={href}
+      target="_blank"
+      rel="noreferrer"
+      className="sidebar-icon mx-2"
+    >
       {icon}
     </a>
   );

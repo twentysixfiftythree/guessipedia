@@ -2,73 +2,156 @@ import logo from "./logo.svg";
 import "./App.css";
 import NavBar from "./components/NavBar";
 
-import PullWiki from "./components/django_api";
+import DisplayHints from "./components/DisplayHints";
 import { AutoCompleteBar } from "./components/AutoComplete";
-import React, { useEffect, useState, useRef, useCallback } from "react";
+import { CategoryBar } from "./components/CategoryBar";
+import { ResultStatistics } from "./components/ResultStatistics";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 
 function App() {
-  const [pageToGuess, setPageToGuess] = useState("");
-  const [surroundingLinks, setSurroundingLinks] = useState("");
-  const [surroundingTitles, setSurroundingTitles] = useState("");
-  const [categories, setCategories] = useState("");
-  const [allTitles, setAllTitles] = useState("");
-  const [result, setResult] = useState("");
-  const fetched = useRef(false);
+  const [searchValue, setSearchValue] = useState("");
+  const [hiddenHints, setHiddenHints] = useState([
+    1, 2, 4, 5, 7, 8, 10, 11, 13, 14,
+  ]);
+  const [showResults, setShowResults] = useState(false);
+
+  const [wikiData, setwikiData] = useState({
+    pageToGuess: "",
+    surroundingTitles: "",
+    categories: "",
+    allTitles: "",
+  });
+
+  const [gameStats, setGameStats] = useState({
+    score: 100,
+    hintsUsed: 0,
+    wrongGuesses: 0,
+    guessResult: "",
+  });
+
+  const resetGame = () => {
+    fetchAPI();
+    setHiddenHints([1, 2, 4, 5, 7, 8, 10, 11, 13, 14]);
+    setGameStats({
+      score: 100,
+      hintsUsed: 0,
+      wrongGuesses: 0,
+      guessResult: "",
+    });
+  };
 
   const handleSelect = useCallback(
-    (selectedOption) => {
+    (selectedOption, score) => {
       console.log(selectedOption);
-      if (selectedOption === pageToGuess) {
-        setResult("Correct");
+      if (selectedOption.toLowerCase() === wikiData.pageToGuess.toLowerCase()) {
+        setGameStats((prevStats) => ({
+          ...prevStats,
+          guessResult: "Correct",
+        }));
+
+        setShowResults(true);
       } else {
-        setResult("Incorrect");
+        console.log(score);
+        setGameStats((prevStats) => ({
+          ...prevStats,
+          score: prevStats.score - 10,
+          wrongGuesses: prevStats.wrongGuesses + 1,
+          guessResult: "Incorrect",
+        }));
       }
     },
-    [pageToGuess]
+    [wikiData.pageToGuess]
   );
 
-  const handlSearchValueChange = useCallback((value) => {
-    console.log(value);
-  }, []);
-
-  useEffect(() => {
-    if (!fetched.current) {
-      axios
-        .get("http://localhost:8000/wikis/get-page-data/")
-        .then((response) => {
-          setPageToGuess(response.data.title);
-
-          setSurroundingTitles(JSON.parse(response.data.surrounding_titles));
-
-          setCategories(JSON.parse(response.data.categories));
-
-          setAllTitles(JSON.parse(response.data.all_titles));
-
-          console.log(response.data.categories);
-          fetched.current = true;
-        })
-        .catch((error) => {
-          console.log(error);
-        });
+  const updateHints = () => {
+    if (hiddenHints.length !== 0) {
+      setGameStats((prevStats) => ({
+        ...prevStats,
+        score: prevStats.score - 20,
+        hintsUsed: prevStats.hintsUsed + 1,
+      }));
+      if (hiddenHints.length % 2 === 0) {
+        setHiddenHints([2, 5, 8, 11, 14]);
+      } else if (hiddenHints.length % 2 === 1) {
+        setHiddenHints([]);
+      }
     }
+  };
+
+  const fetchAPI = () => {
+    axios
+      .get("http://localhost:8000/wikis/get-page-data/")
+      .then((response) => {
+        setwikiData({
+          pageToGuess: response.data.title,
+          surroundingTitles: JSON.parse(response.data.surrounding_titles),
+          categories: JSON.parse(response.data.categories),
+          allTitles: JSON.parse(response.data.all_titles),
+        });
+        setSearchValue("");
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+  useEffect(() => {
+    fetchAPI();
   }, []);
-  console.log(allTitles);
+
   return (
     <>
-      <NavBar />
-      <PullWiki
-        message={pageToGuess}
-        surroundingLinks={surroundingLinks}
-        surroundingTitles={surroundingTitles}
-        categories={categories}
-      />
-      <AutoCompleteBar
-        options={allTitles}
-        onSelect={handleSelect}
-        onSearchValueChange={handlSearchValueChange}
-      />
-      <p>You have Guessed {result}</p>
+      <div className="fixed bg-gray-600 h-screen w-screen overscroll-none">
+        <NavBar />
+        {showResults && (
+          <div className="absolute top-0 left-0 w-full h-full z-20">
+            <ResultStatistics
+              gameStats={gameStats}
+              setShowResults={setShowResults}
+              resetGame={resetGame}
+              showResults={showResults}
+            />
+          </div>
+        )}
+        <div className="flex justify-between items-center">
+          <div className="flex-1"></div>
+          <div className="flex justify-center z-10">
+            <CategoryBar categories={wikiData.categories} />
+          </div>
+          <div className="flex justify-end flex-1">
+            <button className="newGameButton w-24 z-10" onClick={resetGame}>
+              New Game
+            </button>
+          </div>
+        </div>
+
+        <DisplayHints wikiData={wikiData} hiddenBoxes={hiddenHints} />
+        <div className="justify-center flex relative">
+          <button className="button" onClick={updateHints}>
+            Hint
+          </button>
+          <AutoCompleteBar
+            options={wikiData.allTitles}
+            onSelect={handleSelect}
+            searchValue={searchValue}
+            setSearchValue={setSearchValue}
+            score={gameStats.score}
+          />
+
+          <button
+            className="button"
+            onClick={() => {
+              handleSelect(searchValue, gameStats.score);
+              setSearchValue("");
+            }}
+          >
+            Go
+          </button>
+        </div>
+        <div className="justify-center flex text-yellow-500">
+          <p>Guess {gameStats.guessResult}</p>
+        </div>
+      </div>
     </>
   );
 }
